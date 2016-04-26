@@ -1,25 +1,35 @@
 var React = require('react');
 var Actions = require('../actions');
 var ImageStore = require('../store/image-store');
+var ImagePreview = require('./image-preview');
 var Reflux = require('reflux');
 
 module.exports = React.createClass({
   mixins: [
     Reflux.listenTo(ImageStore, 'onChange')
   ],
-  getInitialState: function(){
+  getInitialState: function() {
     return {
       images: []
     }
   },
-  componentWillMount: function(){
+  componentWillMount: function() {
     Actions.getImages(this.props.params.id);
   },
-  render: function(){
-    return <div>
+  componentWillReceiveProps: function(nextProps){
+    Actions.getImages(this.props.params.id);
+  },
+  render: function() {
+    return <div className="topic">
+      {this.renderImages()}
     </div>
   },
-  onChange: function(event, images){
+  renderImages(){
+    return this.state.images.slice(0, 20).map(function(image){
+      return <ImagePreview key={image.id} {...image} />
+    });
+  },
+  onChange: function(event, images) {
     this.setState({images: images})
   }
-})
+});
